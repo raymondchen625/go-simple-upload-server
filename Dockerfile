@@ -1,4 +1,4 @@
-ARG ARCH=amd64
+ARG ARCH=arm64
 FROM golang:1.21 AS build
 
 LABEL org.opencontainers.image.authors="Mei Akizuru <chimeaquas@hotmail.com>"
@@ -14,6 +14,8 @@ RUN go mod download
 COPY . /go/src/app
 RUN GOOS=linux GOARCH=${ARCH} CGO_ENABLED=0 go build -o /go/bin/app
 
-FROM scratch
+FROM alpine
+RUN apk add --no-cache busybox
 COPY --from=build /go/bin/app /usr/local/bin/app
+COPY config.json /usr/local/bin/config.json
 ENTRYPOINT ["/usr/local/bin/app"]
